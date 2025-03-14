@@ -182,6 +182,7 @@ class ImageRenamerPage:
                 f.write("ocr识别非货号")
 
 
+
         else:
             # 使用 pathlib 获取文件所在的文件夹路径
             file = Path(image_path)
