@@ -196,7 +196,7 @@ class ImageRenamerPage:
                 # 重命名文件夹
                 folder_path.rename(new_folder_path)
                 # 执行重命名逻辑
-        messagebox.showinfo("结束","操作已完成，请检查")
+        #messagebox.showinfo("结束","操作已完成，请检查")
 
 
     def file_open_rename(self):
@@ -208,6 +208,8 @@ class ImageRenamerPage:
             # 遍历目录下的所有文件
         for file_name in os.listdir(self.folder_path):
             self.rename_file(os.path.join(self.folder_path, file_name))
+        
+        messagebox.showinfo("结束","操作已完成，请检查")
 
 
 
