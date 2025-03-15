@@ -3,7 +3,7 @@ import shutil
 import tkinter as tk
 from tkinter import filedialog, messagebox
 
-IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp'}
+IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp', '.CR2', '.CR3', '.CRW', '.NEF', '.NRW', '.ARV', '.SRF'}
 
 
 class ImageDistributorPage:
