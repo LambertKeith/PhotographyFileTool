@@ -1,6 +1,7 @@
 import os
 import shutil
 import tkinter as tk
+import random
 from tkinter import filedialog, messagebox
 from tqdm import tqdm
 import ocr
@@ -102,10 +103,13 @@ class ImageRenamerPage:
                 img_base = base64.b64encode(img_file.read()).decode('utf-8')
         return img_base
 
-
-
-
     def process_string(self,input_string):
+        # 使用换行符进行分割
+        split_data = input_string.split('\n')
+        for i in split_data:
+            if len(i) > 8:
+                input_string = i
+                break
         # 找到第一个换行符的位置
         newline_index = input_string.find("\n")
 
@@ -140,7 +144,7 @@ class ImageRenamerPage:
                         },
                         {
                             "type": "text",
-                            "text": "请告诉我所给图片是否为手写体，如果是，请输出true，不是则false。不需要输出别的信息"
+                            "text": "需要识别内容为货号，开头为字母，结尾为数字，且位数在8位以上。判断该内容是否为手写体，如果是，请输出true和货号，格式为true，货号；不是输出false；无法判断也输出false。不需要输出别的信息"
                         }
                     ]
                 }
@@ -159,8 +163,8 @@ class ImageRenamerPage:
                 image_path = os.path.join(f, file_name)
                 # 压缩图片
                 compress_img = self.compress_image_to_1mb(image_path)
-                if self.glm_v4(self.create_base_image(image_path)) == 'true':
-                    text = ''
+                if 'true' in self.glm_v4(self.create_base_image(image_path)):
+                    text = self.glm_v4(self.create_base_image(image_path))
                     break
                 else:
                     # 执行ocr识别
@@ -170,33 +174,37 @@ class ImageRenamerPage:
                     if text != '' and text[0].isalpha() and text[-1].isdigit():
                         break
 
+        # 使用 pathlib 获取文件所在的文件夹路径
+        file = Path(image_path)
+        folder_path = file.parent  # 获取文件所在的文件夹路径
+
+
         #ocr为识别出来的文件夹内追加txt文件
-
         if (text == ''):
-            with open(os.path.join(f, "erro.txt"), "a", encoding="utf-8") as f:
-                f.write("ocr无法识别")
+            text = "无法识别"+str(random.randint(1, 100))
 
+        elif 'true' in text:
+            comma_split = text.split(',', 1)
+            if len(comma_split)>1:
+                text = comma_split[1].strip()
+                text = text + "手写"
 
         elif not text[0].isalpha() or not text[-1].isdigit():
-            with open(os.path.join(f, "erro.txt"), "a", encoding="utf-8") as f:
-                f.write("ocr识别非货号")
-
-
+            text = text + "无法识别"
 
         else:
-            # 使用 pathlib 获取文件所在的文件夹路径
-            file = Path(image_path)
-            folder_path = file.parent  # 获取文件所在的文件夹路径
-            # 构造新的文件夹路径
-            new_folder_path = folder_path.parent / text
-            #判断文件是否存在
-            if new_folder_path.exists():
-                messagebox.showinfo("失败", new_folder_path/"已存在")
-            else:
-                # 重命名文件夹
-                folder_path.rename(new_folder_path)
-                # 执行重命名逻辑
-        #messagebox.showinfo("结束","操作已完成，请检查")
+            text = text
+
+
+        # 构造新的文件夹路径
+        new_folder_path = folder_path.parent / text
+        # 判断文件是否存在
+        if new_folder_path.exists():
+            print("失败")
+            # messagebox.showinfo("失败", new_folder_path / "已存在")
+        else:
+        # 重命名文件夹
+            folder_path.rename(new_folder_path)
 
 
     def file_open_rename(self):
@@ -207,7 +215,22 @@ class ImageRenamerPage:
 
             # 遍历目录下的所有文件
         for file_name in os.listdir(self.folder_path):
-            self.rename_file(os.path.join(self.folder_path, file_name))
+            try:
+                # 尝试执行可能引发异常的代码
+                result = self.rename_file(os.path.join(self.folder_path, file_name))
+            except IndexError as e:
+                # 捕获异常并处理
+                print(f"捕获到异常: {e}")
+                # 可以选择重新抛出异常（可选）
+                # raise
+            except Exception as e:
+                # 捕获其他类型的异常
+                print(f"捕获到其他异常: {e}")
+                # 可以选择重新抛出异常（可选）
+                # raise
+            finally:
+                # 无论是否捕获到异常，都会执行 finally 块
+                print("程序继续执行，执行后续清理或逻辑。")
         
         messagebox.showinfo("结束","操作已完成，请检查")
 
