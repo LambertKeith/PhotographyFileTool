@@ -3,7 +3,7 @@ import shutil
 import tkinter as tk
 from tkinter import filedialog, messagebox
 
-IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp', '.CR2', '.CR3', '.CRW', '.NEF', '.NRW', '.ARV', '.SRF'}
+IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp', '.CR2', '.CR3', '.CRW', '.NEF', '.NRW', '.ARV', '.SRF','.ARW', '.arw'}
 
 
 class ImageDistributorPage:
@@ -100,9 +100,15 @@ class ImageDistributorPage:
             return False
 
         image_extensions = IMAGE_EXTENSIONS
-        image_files = [f for f in os.listdir(folder_path)
+        """ image_files = [f for f in os.listdir(folder_path)
                        if os.path.isfile(os.path.join(folder_path, f)) and
-                       os.path.splitext(f)[1].lower() in image_extensions]
+                       os.path.splitext(f)[1].lower() in image_extensions] """
+        image_files = [f for f in os.listdir(folder_path)
+                       if os.path.isfile(os.path.join(folder_path, f))]
+        print(image_files)
+        for i in image_files:
+            pass
+            #if os.path.splitext(i)[1] == 'ARW'
 
         image_count = len(image_files)
         total_sum = sum(numbers)
@@ -152,8 +158,7 @@ class ImageDistributorPage:
 
         image_extensions = IMAGE_EXTENSIONS
         image_files = sorted([f for f in os.listdir(folder_path)
-                              if os.path.isfile(os.path.join(folder_path, f)) and
-                              os.path.splitext(f)[1].lower() in image_extensions])
+                              if os.path.isfile(os.path.join(folder_path, f))])
 
         if len(image_files) == 0:
             messagebox.showerror("错误", "没有找到可用的图片")
